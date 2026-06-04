@@ -391,11 +391,10 @@ function initLobby(){
 }
 async function loadRecs(){
   try{
-    const top=await api('/me/top/tracks?limit=5&time_range=medium_term');
-    const seeds=top?.items?.slice(0,3).map(t=>t.id).join(',');
-    const p=seeds?`seed_tracks=${seeds}&limit=10`:`seed_genres=pop,rock,hip-hop&limit=10`;
-    const recs=await api('/recommendations?'+p);
-    if(recs?.tracks?.length){S.songs=recs.tracks.map(t=>({id:t.id,title:t.name,artist:t.artists.map(a=>a.name).join(', '),cover:t.album.images[0]?.url||'',colors:['#1a1a2e','#333'],emoji:'🎵'}));}
+    const top=await api('/me/top/tracks?limit=10&time_range=medium_term');
+    if(top?.items?.length){
+      S.songs=top.items.map(t=>({id:t.id,title:t.name,artist:t.artists.map(a=>a.name).join(', '),cover:t.album.images[0]?.url||'',colors:['#1a1a2e','#333'],emoji:'🎵'}));
+    }
     else{S.songs=[...DEMO];showToast('Nutze Demo-Songs');}
   }catch{S.songs=[...DEMO];}
 }
