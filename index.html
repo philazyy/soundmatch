@@ -28,7 +28,7 @@ body{background:var(--bg);color:var(--text);font-family:'DM Sans',sans-serif;hei
 /* ── SETUP (Onboarding) ── */
 #screen-setup{justify-content:flex-start;padding-top:max(30px,env(safe-area-inset-top))}
 .setup-top{text-align:center;margin-bottom:28px}
-.setup-logo{font-family:'Abril Fatface',serif;font-size:36px;background:linear-gradient(135deg,var(--text),var(--gold));-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+.setup-logo{font-family:'Abril Fatface',serif;font-size:36px;background:linear-gradient(135deg,var(--text),var(--gold));background-clip:text;-webkit-background-clip:text;-webkit-text-fill-color:transparent}
 .setup-tagline{font-size:13px;color:var(--muted);margin-top:4px}
 .setup-card{width:100%;background:var(--card);border-radius:20px;padding:22px;border:1px solid var(--border);margin-bottom:14px}
 .setup-card-title{font-weight:700;font-size:15px;margin-bottom:14px;display:flex;align-items:center;gap:8px}
@@ -52,7 +52,7 @@ body{background:var(--bg);color:var(--text);font-family:'DM Sans',sans-serif;hei
 .vinyl::before{content:'';position:absolute;inset:38%;background:radial-gradient(circle,var(--orange),#c0392b);border-radius:50%}
 .vinyl::after{content:'';position:absolute;inset:47%;background:var(--bg);border-radius:50%}
 @keyframes spin{to{transform:rotate(360deg)}}
-.login-title{font-family:'Abril Fatface',serif;font-size:54px;background:linear-gradient(135deg,var(--text) 0%,var(--gold) 100%);-webkit-background-clip:text;-webkit-text-fill-color:transparent;margin-bottom:6px;z-index:1;position:relative}
+.login-title{font-family:'Abril Fatface',serif;font-size:54px;background:linear-gradient(135deg,var(--text) 0%,var(--gold) 100%);background-clip:text;-webkit-background-clip:text;-webkit-text-fill-color:transparent;margin-bottom:6px;z-index:1;position:relative}
 .login-sub{color:var(--muted);font-size:13px;letter-spacing:.12em;text-transform:uppercase;margin-bottom:44px;z-index:1;position:relative}
 .login-buttons{width:100%;display:flex;flex-direction:column;gap:11px;z-index:1;position:relative}
 .login-settings{margin-top:6px;text-align:center;font-size:12px;color:var(--muted);cursor:pointer;padding:6px}
@@ -135,7 +135,7 @@ body{background:var(--bg);color:var(--text);font-family:'DM Sans',sans-serif;hei
 #screen-results{padding-top:max(20px,env(safe-area-inset-top))}
 .results-hd{text-align:center;padding:18px 0}
 .results-emoji{font-size:50px;margin-bottom:7px}
-.results-count{font-family:'Abril Fatface',serif;font-size:30px;background:linear-gradient(135deg,var(--text),var(--gold));-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+.results-count{font-family:'Abril Fatface',serif;font-size:30px;background:linear-gradient(135deg,var(--text),var(--gold));background-clip:text;-webkit-background-clip:text;-webkit-text-fill-color:transparent}
 .results-sub{color:var(--muted);font-size:13px;margin-top:4px}
 .song-list{width:100%;display:flex;flex-direction:column;gap:9px;margin-bottom:18px}
 .si{display:flex;align-items:center;gap:11px;background:var(--card);border-radius:13px;padding:12px;border:1px solid var(--border)}
@@ -328,7 +328,7 @@ body{background:var(--bg);color:var(--text);font-family:'DM Sans',sans-serif;hei
 </div>
 
 <script>
-const S={demo:false,token:null,userId:null,userName:null,songs:[],votes:[],cur:0,sessionCode:null,myVoteCode:null,matchIdx:[],playlistUrl:null};
+const S={demo:false,token:null,userId:null,userName:null,songs:[],votes:[],cur:0,sessionCode:null,myVoteCode:null,matchIdx:[],playlistUrl:null,lastRoundIds:[]};
 const DEMO=[
   {id:'d1',title:'Blinding Lights',artist:'The Weeknd',cover:'',colors:['#1a0828','#e040fb'],emoji:'🌙'},
   {id:'d2',title:'Shape of You',artist:'Ed Sheeran',cover:'',colors:['#0d1b2a','#e8a838'],emoji:'🌊'},
@@ -394,12 +394,23 @@ function initLobby(){
 }
 async function loadRecs(){
   try{
-    const top=await api('/me/top/tracks?limit=10&time_range=medium_term');
-    if(top?.items?.length){
-      S.songs=top.items.map(t=>({id:t.id,title:t.name,artist:t.artists.map(a=>a.name).join(', '),cover:t.album.images[0]?.url||'',colors:['#1a1a2e','#333'],emoji:'🎵',preview:t.preview_url}));
+    const ranges=['short_term','medium_term','long_term'];
+    const tops=await Promise.all(ranges.map(range=>api('/me/top/tracks?limit=10&time_range='+range)));
+    const seen=new Set();
+    const pool=[];
+    const exclude=new Set(S.lastRoundIds||[]);
+    tops.forEach(top=>{
+      (top?.items||[]).forEach(t=>{
+        if(!t?.id||seen.has(t.id)||exclude.has(t.id)||!t.preview_url)return;
+        seen.add(t.id);
+        pool.push({id:t.id,title:t.name,artist:t.artists.map(a=>a.name).join(', '),cover:t.album.images[0]?.url||'',colors:['#1a1a2e','#333'],emoji:'🎵',preview:t.preview_url});
+      });
+    });
+    if(pool.length){
+      S.songs=pool.sort(()=>Math.random()-.5).slice(0,10);
     }
-    else{S.songs=[...DEMO];showToast('Nutze Demo-Songs');}
-  }catch{S.songs=[...DEMO];}
+    else{S.songs=[...DEMO].sort(()=>Math.random()-.5);showToast('Nutze Demo-Songs');}
+  }catch{S.songs=[...DEMO].sort(()=>Math.random()-.5);}
 }
 function renderMembers(){
   document.getElementById('members-list').innerHTML=`<div style="font-family:'DM Mono',monospace;font-size:11px;letter-spacing:.1em;color:var(--muted);margin-bottom:10px;text-transform:uppercase">Teilnehmer</div>
@@ -440,8 +451,8 @@ async function fetchByIds(ids){
 }
 
 // SWIPE
-function startSwiping(){S.votes=new Array(S.songs.length).fill(null);S.cur=0;buildSwipe();showScreen('swipe');}
-function abortSwipe(){if(confirm('Runde abbrechen?')){S.votes=[];S.cur=0;showScreen('lobby');}}
+function startSwiping(){S.lastRoundIds=S.songs.map(s=>s.id);S.votes=new Array(S.songs.length).fill(null);S.cur=0;showScreen('swipe');buildSwipe();playCurrentPreview();}
+function abortSwipe(){stopPreview();if(confirm('Runde abbrechen?')){S.votes=[];S.cur=0;showScreen('lobby');}}
 function buildSwipe(){
   document.getElementById('prog-dots').innerHTML=S.songs.map((_,i)=>`<div class="dot" id="dot${i}"></div>`).join('');
   updateProg();
@@ -459,7 +470,7 @@ function mkCard(song,idx){
   const[c1,c2]=song.colors||['#1a1a2e','#333'];
   el.innerHTML=(song.cover?`<img class="card-cover" src="${song.cover}" draggable="false">`:`<div class="card-cover-ph" style="background:linear-gradient(145deg,${c1},${c2})">${song.emoji||'🎵'}</div>`)+
   `<div class="card-info"><div class="swipe-ind like-ind">LIKE</div><div class="swipe-ind nope-ind">NOPE</div>`+
-  (song.preview?`<button class="play-preview" onclick="event.stopPropagation();playPreview('${song.preview}')">▶ Vorschau</button>`:`<div style="font-size:11px;color:var(--muted);margin-bottom:8px">Keine Vorschau</div>`)+
+  (song.preview?`<button class="play-preview" onclick="event.stopPropagation();playPreview(${JSON.stringify(song.preview)})">▶ Vorschau</button>`:`<div style="font-size:11px;color:var(--muted);margin-bottom:8px">Keine Vorschau</div>`)+
   `<div class="card-song">${song.title}</div><div class="card-artist">${song.artist}</div></div>`;
   return el;
 }
@@ -503,7 +514,7 @@ function swipeCard(liked){
   const d=document.getElementById('dot'+f.dataset.i);if(d)d.className='dot '+(liked===true?'liked':liked===false?'disliked':'');
   setTimeout(()=>{S.cur++;advance();},270);
 }
-function advance(){if(S.cur>=S.songs.length){done();return;}updateProg();buildSwipe();}
+function advance(){if(S.cur>=S.songs.length){done();return;}updateProg();buildSwipe();playCurrentPreview();}
 function updateProg(){
   document.getElementById('prog-text').textContent=(S.cur+1)+' / '+S.songs.length;
   S.songs.forEach((_,i)=>{const d=document.getElementById('dot'+i);if(!d)return;if(i<S.cur)d.className='dot '+(S.votes[i]===true?'liked':'disliked');else if(i===S.cur)d.className='dot current';else d.className='dot';});
@@ -515,10 +526,21 @@ let audioPlayer=null;
 function playPreview(url){
   if(!url){showToast('Keine Vorschau verfügbar');return;}
   if(!audioPlayer){audioPlayer=new Audio();audioPlayer.volume=0.5;}
-  if(audioPlayer.src===url&&!audioPlayer.paused){audioPlayer.pause();return;}
+  if(audioPlayer.currentSrc===url&&!audioPlayer.paused){return;}
   audioPlayer.src=url;
   audioPlayer.currentTime=0;
-  audioPlayer.play().catch(e=>showToast('Audio konnte nicht abgespielt werden'));
+  audioPlayer.play().catch(()=>showToast('Audio konnte nicht automatisch starten - tippe auf "▶ Vorschau"'));
+}
+function stopPreview(){
+  if(!audioPlayer)return;
+  audioPlayer.pause();
+  audioPlayer.removeAttribute('src');
+  audioPlayer.load();
+}
+function playCurrentPreview(){
+  const song=S.songs[S.cur];
+  if(song?.preview)playPreview(song.preview);
+  else stopPreview();
 }
 
 // VOTES
