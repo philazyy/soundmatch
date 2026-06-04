@@ -102,6 +102,8 @@ body{background:var(--bg);color:var(--text);font-family:'DM Sans',sans-serif;hei
 .card-cover{width:100%;height:68%;object-fit:cover;display:block;pointer-events:none}
 .card-cover-ph{width:100%;height:68%;display:flex;align-items:center;justify-content:center;font-size:80px}
 .card-info{position:absolute;bottom:0;left:0;right:0;padding:28px 22px 22px;background:linear-gradient(transparent,rgba(0,0,0,.92) 28%);height:52%;display:flex;flex-direction:column;justify-content:flex-end}
+.play-preview{background:rgba(255,255,255,.15);border:1px solid rgba(255,255,255,.3);color:white;border-radius:8px;padding:8px 14px;font-size:12px;cursor:pointer;font-family:'DM Sans',sans-serif;font-weight:600;margin-bottom:10px;transition:background .2s;backdrop-filter:blur(4px)}
+.play-preview:active{background:rgba(255,255,255,.25)}
 .card-song{font-family:'Abril Fatface',serif;font-size:26px;line-height:1.1;margin-bottom:5px}
 .card-artist{font-size:14px;color:rgba(255,255,255,.65);font-weight:300}
 .swipe-ind{position:absolute;top:18px;padding:7px 14px;border-radius:7px;font-family:'Abril Fatface',serif;font-size:24px;letter-spacing:.05em;opacity:0;transition:opacity .08s;pointer-events:none;z-index:20}
@@ -394,7 +396,7 @@ async function loadRecs(){
   try{
     const top=await api('/me/top/tracks?limit=10&time_range=medium_term');
     if(top?.items?.length){
-      S.songs=top.items.map(t=>({id:t.id,title:t.name,artist:t.artists.map(a=>a.name).join(', '),cover:t.album.images[0]?.url||'',colors:['#1a1a2e','#333'],emoji:'🎵'}));
+      S.songs=top.items.map(t=>({id:t.id,title:t.name,artist:t.artists.map(a=>a.name).join(', '),cover:t.album.images[0]?.url||'',colors:['#1a1a2e','#333'],emoji:'🎵',preview:t.preview_url}));
     }
     else{S.songs=[...DEMO];showToast('Nutze Demo-Songs');}
   }catch{S.songs=[...DEMO];}
@@ -432,7 +434,7 @@ function joinSession(){
 async function fetchByIds(ids){
   showToast('Lade Songs…');
   const d=await api('/tracks?ids='+ids.join(','));
-  if(d?.tracks)S.songs=d.tracks.filter(Boolean).map(t=>({id:t.id,title:t.name,artist:t.artists.map(a=>a.name).join(', '),cover:t.album.images[0]?.url||'',colors:['#1a1a2e','#333'],emoji:'🎵'}));
+  if(d?.tracks)S.songs=d.tracks.filter(Boolean).map(t=>({id:t.id,title:t.name,artist:t.artists.map(a=>a.name).join(', '),cover:t.album.images[0]?.url||'',colors:['#1a1a2e','#333'],emoji:'🎵',preview:t.preview_url}));
   else S.songs=[...DEMO];
   startSwiping();
 }
@@ -456,7 +458,9 @@ function mkCard(song,idx){
   const el=document.createElement('div');el.className='song-card';el.dataset.i=idx;
   const[c1,c2]=song.colors||['#1a1a2e','#333'];
   el.innerHTML=(song.cover?`<img class="card-cover" src="${song.cover}" draggable="false">`:`<div class="card-cover-ph" style="background:linear-gradient(145deg,${c1},${c2})">${song.emoji||'🎵'}</div>`)+
-  `<div class="card-info"><div class="swipe-ind like-ind">LIKE</div><div class="swipe-ind nope-ind">NOPE</div><div class="card-song">${song.title}</div><div class="card-artist">${song.artist}</div></div>`;
+  `<div class="card-info"><div class="swipe-ind like-ind">LIKE</div><div class="swipe-ind nope-ind">NOPE</div>`+
+  (song.preview?`<button class="play-preview" onclick="event.stopPropagation();playPreview('${song.preview}')">▶ Vorschau</button>`:`<div style="font-size:11px;color:var(--muted);margin-bottom:8px">Keine Vorschau</div>`)+
+  `<div class="card-song">${song.title}</div><div class="card-artist">${song.artist}</div></div>`;
   return el;
 }
 function attachSwipe(card){
@@ -505,6 +509,17 @@ function updateProg(){
   S.songs.forEach((_,i)=>{const d=document.getElementById('dot'+i);if(!d)return;if(i<S.cur)d.className='dot '+(S.votes[i]===true?'liked':'disliked');else if(i===S.cur)d.className='dot current';else d.className='dot';});
 }
 function done(){const n=S.votes.filter(v=>v===true).length;showToast(n+' Song'+(n!==1?'s':'')+' geliked!');genCode();showScreen('collect');}
+
+// AUDIO PREVIEW
+let audioPlayer=null;
+function playPreview(url){
+  if(!url){showToast('Keine Vorschau verfügbar');return;}
+  if(!audioPlayer){audioPlayer=new Audio();audioPlayer.volume=0.5;}
+  if(audioPlayer.src===url&&!audioPlayer.paused){audioPlayer.pause();return;}
+  audioPlayer.src=url;
+  audioPlayer.currentTime=0;
+  audioPlayer.play().catch(e=>showToast('Audio konnte nicht abgespielt werden'));
+}
 
 // VOTES
 function genCode(){let bm=0;S.votes.forEach((v,i)=>{if(v===true)bm|=(1<<i);});S.myVoteCode=bm.toString(36).toUpperCase().padStart(4,'0');document.getElementById('my-vote-code').textContent=S.myVoteCode;}
