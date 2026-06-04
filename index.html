@@ -102,7 +102,7 @@ body{background:var(--bg);color:var(--text);font-family:'DM Sans',sans-serif;hei
 .card-cover{width:100%;height:68%;object-fit:cover;display:block;pointer-events:none}
 .card-cover-ph{width:100%;height:68%;display:flex;align-items:center;justify-content:center;font-size:80px}
 .card-info{position:absolute;bottom:0;left:0;right:0;padding:28px 22px 22px;background:linear-gradient(transparent,rgba(0,0,0,.92) 28%);height:52%;display:flex;flex-direction:column;justify-content:flex-end}
-.play-preview{background:rgba(255,255,255,.15);border:1px solid rgba(255,255,255,.3);color:white;border-radius:8px;padding:8px 14px;font-size:12px;cursor:pointer;font-family:'DM Sans',sans-serif;font-weight:600;margin-bottom:10px;transition:background .2s;backdrop-filter:blur(4px)}
+.play-preview{background:rgba(255,255,255,.15);border:1px solid rgba(255,255,255,.3);color:white;border-radius:8px;padding:8px 14px;font-size:12px;cursor:pointer;font-family:'DM Sans',sans-serif;font-weight:600;margin-bottom:10px;transition:background .2s;backdrop-filter:blur(4px);display:flex;align-items:center;justify-content:center;gap:6px}
 .play-preview:active{background:rgba(255,255,255,.25)}
 .card-song{font-family:'Abril Fatface',serif;font-size:26px;line-height:1.1;margin-bottom:5px}
 .card-artist{font-size:14px;color:rgba(255,255,255,.65);font-weight:300}
@@ -134,9 +134,9 @@ body{background:var(--bg);color:var(--text);font-family:'DM Sans',sans-serif;hei
 /* ── RESULTS ── */
 #screen-results{padding-top:max(20px,env(safe-area-inset-top))}
 .results-hd{text-align:center;padding:18px 0}
-.results-emoji{font-size:50px;margin-bottom:7px}
-.results-count{font-family:'Abril Fatface',serif;font-size:30px;background:linear-gradient(135deg,var(--text),var(--gold));background-clip:text;-webkit-background-clip:text;-webkit-text-fill-color:transparent}
-.results-sub{color:var(--muted);font-size:13px;margin-top:4px}
+.results-emoji" id="res-emoji">🎵</div>
+.results-count" id="res-count">0 gemeinsame Songs</div>
+.results-sub" id="res-sub"></div>
 .song-list{width:100%;display:flex;flex-direction:column;gap:9px;margin-bottom:18px}
 .si{display:flex;align-items:center;gap:11px;background:var(--card);border-radius:13px;padding:12px;border:1px solid var(--border)}
 .si.match{border-color:rgba(46,204,113,.3);background:rgba(46,204,113,.05)}
@@ -169,22 +169,20 @@ body{background:var(--bg);color:var(--text);font-family:'DM Sans',sans-serif;hei
 <body>
 <div id="app">
 
-<!-- ── SETUP (einmalig) ── -->
 <div class="screen" id="screen-setup">
   <div class="setup-top">
     <div class="setup-logo">🎵 SoundMatch</div>
     <div class="setup-tagline">Einmalige Einrichtung — dauert 2 Minuten</div>
   </div>
-
   <div class="setup-card">
     <div class="setup-card-title">⚙️ Spotify-App erstellen</div>
     <div class="step">
       <div class="step-num">1</div>
-      <div class="step-text">Gehe zu <a href="https://developer.spotify.com/dashboard" target="_blank">developer.spotify.com/dashboard</a> und logge dich mit deinem Spotify-Konto ein.</div>
+      <div class="step-text">Gehe zum Spotify Developer Dashboard und logge dich ein.</div>
     </div>
     <div class="step">
       <div class="step-num">2</div>
-      <div class="step-text">Klicke auf <b>„Create app"</b>. Name &amp; Beschreibung sind egal. Wähle bei <b>„Which API?"</b> → <b>Web API</b>.</div>
+      <div class="step-text">Klicke auf <b>„Create app"</b>. Name & Beschreibung sind egal. Wähle bei <b>„Which API?"</b> → <b>Web API</b>.</div>
     </div>
     <div class="step">
       <div class="step-num">3</div>
@@ -197,21 +195,18 @@ body{background:var(--bg);color:var(--text);font-family:'DM Sans',sans-serif;hei
     </div>
     <div class="step">
       <div class="step-num">4</div>
-      <div class="step-text">Gehe zu <b>Settings</b> in deiner App und kopiere die <b>Client ID</b> (32 Zeichen):</div>
+      <div class="step-text">Gehe zu <b>Settings</b> in deiner App und kopiere die <b>Client ID</b>:</div>
     </div>
   </div>
-
   <div style="width:100%">
     <input class="cid-input" id="cid-input" type="text" placeholder="Client ID hier einfügen…" autocomplete="off" autocorrect="off" spellcheck="false">
   </div>
-
   <div class="setup-bottom">
-    <button class="btn btn-primary" onclick="saveAndLogin()">Verbinden &amp; loslegen →</button>
+    <button class="btn btn-primary" onclick="saveAndLogin()">Verbinden & loslegen →</button>
     <button class="btn btn-ghost" onclick="startDemo()">Demo-Modus (ohne Spotify)</button>
   </div>
 </div>
 
-<!-- ── LOGIN (nach Einrichtung) ── -->
 <div class="screen" id="screen-login">
   <div class="login-glow"></div>
   <div class="vinyl"></div>
@@ -227,7 +222,6 @@ body{background:var(--bg);color:var(--text);font-family:'DM Sans',sans-serif;hei
   </div>
 </div>
 
-<!-- ── LOBBY ── -->
 <div class="screen" id="screen-lobby">
   <div class="screen-header">
     <button class="back-btn" onclick="showScreen('login')">←</button>
@@ -253,11 +247,9 @@ body{background:var(--bg);color:var(--text);font-family:'DM Sans',sans-serif;hei
     <div class="info-box">Gib den kopierten Code/Text des Hosts ein:</div>
     <input class="input-field" id="join-input" type="text" placeholder="Code oder kopierten Text einfügen" style="letter-spacing:normal;font-size:14px;text-transform:none">
     <button class="btn btn-primary" onclick="joinSession()">Beitreten →</button>
-    <div class="info-box" style="font-size:12px">Ohne Host-Code: du stimmst für Demo-Songs ab und bekommst deinen Vote-Code.</div>
   </div>
 </div>
 
-<!-- ── SWIPE ── -->
 <div class="screen" id="screen-swipe">
   <div class="swipe-header">
     <button class="back-btn" onclick="abortSwipe()">←</button>
@@ -272,7 +264,6 @@ body{background:var(--bg);color:var(--text);font-family:'DM Sans',sans-serif;hei
   </div>
 </div>
 
-<!-- ── COLLECT ── -->
 <div class="screen" id="screen-collect">
   <div class="screen-header">
     <div style="width:36px"></div>
@@ -293,11 +284,9 @@ body{background:var(--bg);color:var(--text);font-family:'DM Sans',sans-serif;hei
     </div>
     <button class="add-btn" onclick="addFI()">+ Freund hinzufügen</button>
   </div>
-  <div class="info-box" style="font-size:12px;margin-bottom:4px">Alleine? Felder leer lassen – nur deine Likes zählen.</div>
   <button class="btn btn-primary" style="margin-bottom:max(20px,env(safe-area-inset-bottom))" onclick="evaluateVotes()">Auswerten →</button>
 </div>
 
-<!-- ── RESULTS ── -->
 <div class="screen" id="screen-results">
   <div class="results-hd">
     <div class="results-emoji" id="res-emoji">🎵</div>
@@ -311,7 +300,6 @@ body{background:var(--bg);color:var(--text);font-family:'DM Sans',sans-serif;hei
   </div>
 </div>
 
-<!-- ── SUCCESS ── -->
 <div class="screen" id="screen-success">
   <div class="success-glow"></div>
   <div class="success-icon">🎉</div>
@@ -320,7 +308,6 @@ body{background:var(--bg);color:var(--text);font-family:'DM Sans',sans-serif;hei
   <div class="success-actions">
     <button class="btn btn-spotify" onclick="openPlaylist()">In Spotify öffnen</button>
     <button class="btn btn-secondary" onclick="playAgain()">Nochmal spielen 🔄</button>
-    <button class="btn btn-ghost" onclick="showScreen('login')">Startseite</button>
   </div>
 </div>
 
@@ -329,23 +316,53 @@ body{background:var(--bg);color:var(--text);font-family:'DM Sans',sans-serif;hei
 
 <script>
 const S={demo:false,token:null,userId:null,userName:null,songs:[],votes:[],cur:0,sessionCode:null,myVoteCode:null,matchIdx:[],playlistUrl:null,lastRoundIds:[]};
+let audioPlayer = new Audio();
+let isPlaying = false;
+
 const DEMO=[
-  {id:'d1',title:'Blinding Lights',artist:'The Weeknd',cover:'',colors:['#1a0828','#e040fb'],emoji:'🌙'},
-  {id:'d2',title:'Shape of You',artist:'Ed Sheeran',cover:'',colors:['#0d1b2a','#e8a838'],emoji:'🌊'},
-  {id:'d3',title:'Bad Guy',artist:'Billie Eilish',cover:'',colors:['#0a2a0a','#39ff14'],emoji:'⚡'},
-  {id:'d4',title:'Uptown Funk',artist:'Bruno Mars',cover:'',colors:['#2a0a0a','#ff4500'],emoji:'🔥'},
-  {id:'d5',title:'Levitating',artist:'Dua Lipa',cover:'',colors:['#100a2a','#9b59b6'],emoji:'✨'},
-  {id:'d6',title:'Watermelon Sugar',artist:'Harry Styles',cover:'',colors:['#2a1a0a','#ff6347'],emoji:'🍉'},
-  {id:'d7',title:'Heat Waves',artist:'Glass Animals',cover:'',colors:['#0a2a2a','#00bcd4'],emoji:'🌊'},
-  {id:'d8',title:'As It Was',artist:'Harry Styles',cover:'',colors:['#2a0a1a','#ff80ab'],emoji:'🌸'},
-  {id:'d9',title:'Stay',artist:'Justin Bieber',cover:'',colors:['#0a1020','#4488ff'],emoji:'💙'},
-  {id:'d10',title:'Montero',artist:'Lil Nas X',cover:'',colors:['#1a0828','#ff1493'],emoji:'👑'}
+  {id:'d1',title:'Blinding Lights',artist:'The Weeknd',cover:'',colors:['#1a0828','#e040fb'],emoji:'🌙',preview:'https://p.gradient.actions.bio/sample1.mp3'},
+  {id:'d2',title:'Shape of You',artist:'Ed Sheeran',cover:'',colors:['#0d1b2a','#e8a838'],emoji:'🌊',preview:'https://p.gradient.actions.bio/sample2.mp3'},
+  {id:'d3',title:'Bad Guy',artist:'Billie Eilish',cover:'',colors:['#0a2a0a','#39ff14'],emoji:'⚡',preview:''},
+  {id:'d4',title:'Uptown Funk',artist:'Bruno Mars',cover:'',colors:['#2a0a0a','#ff4500'],emoji:'🔥',preview:''},
+  {id:'d5',title:'Levitating',artist:'Dua Lipa',cover:'',colors:['#100a2a','#9b59b6'],emoji:'✨',preview:''}
 ];
+
 const SCOPES='user-read-private user-top-read playlist-modify-public playlist-modify-private';
 let CID=localStorage.getItem('sm_cid')||'';
 const REDIRECT=location.href.split('?')[0].split('#')[0];
 
-// PKCE
+document.getElementById('uri-display').textContent = REDIRECT;
+
+window.addEventListener('DOMContentLoaded', () => {
+  const params = new URLSearchParams(window.location.search);
+  const code = params.get('code');
+  if(code) {
+    handleCallback(code);
+  } else {
+    const cachedToken = localStorage.getItem('sm_token');
+    if(cachedToken) {
+      S.token = cachedToken;
+      loadProfile().then(() => {
+        if(S.userId) { showScreen('lobby'); initLobby(); }
+        else { showScreen('login'); }
+      });
+    } else {
+      showScreen(CID ? 'login' : 'setup');
+    }
+  }
+});
+
+function showScreen(id){
+  document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));
+  document.getElementById('screen-'+id).classList.add('active');
+}
+
+function showToast(msg){
+  const t=document.getElementById('toast');t.textContent=msg;t.classList.add('show');
+  setTimeout(()=>t.classList.remove('show'),2500);
+}
+
+// PKCE Flow
 async function cv(){const a=new Uint8Array(32);crypto.getRandomValues(a);return btoa(String.fromCharCode(...a)).replace(/\+/g,'-').replace(/\//g,'_').replace(/=/g,'');}
 async function cc(v){const d=await crypto.subtle.digest('SHA-256',new TextEncoder().encode(v));return btoa(String.fromCharCode(...new Uint8Array(d))).replace(/\+/g,'-').replace(/\//g,'_').replace(/=/g,'');}
 
@@ -353,7 +370,8 @@ async function loginSpotify(){
   if(!CID){showToast('Bitte zuerst einrichten');showScreen('setup');return;}
   const v=await cv(),c=await cc(v);
   sessionStorage.setItem('pkce_v',v);
-  location.href='https://accounts.spotify.com/authorize?'+new URLSearchParams({response_type:'code',client_id:CID,scope:SCOPES,redirect_uri:REDIRECT,code_challenge_method:'S256',code_challenge:c});
+  const u = 'https://accounts.spotify.com/authorize?' + new URLSearchParams({response_type:'code',client_id:CID,scope:SCOPES,redirect_uri:REDIRECT,code_challenge_method:'S256',code_challenge:c});
+  window.location.href = u;
 }
 
 async function handleCallback(code){
@@ -371,9 +389,10 @@ async function handleCallback(code){
 
 async function api(p,o={}){
   const r=await fetch('https://api.spotify.com/v1'+p,{...o,headers:{'Authorization':'Bearer '+S.token,'Content-Type':'application/json',...(o.headers||{})}});
-  if(r.status===401){logout();return null;}
+  if(r.status===401){localStorage.removeItem('sm_token');showScreen('login');return null;}
   return r.ok?r.json():null;
 }
+
 async function loadProfile(){const p=await api('/me');if(p){S.userId=p.id;S.userName=p.display_name||p.id;}}
 
 function saveAndLogin(){
@@ -385,37 +404,42 @@ function saveAndLogin(){
 function copyUri(){navigator.clipboard?.writeText(REDIRECT).then(()=>showToast('URL kopiert!')).catch(()=>showToast(REDIRECT));}
 function startDemo(){S.demo=true;S.userName='Du';S.userId='demo';showScreen('lobby');initLobby();}
 
-// LOBBY
+// LOBBY & LOADING TOP USER SONGS
 function initLobby(){
   S.sessionCode=Math.random().toString(36).slice(2,8).toUpperCase();
   document.getElementById('session-code').textContent=S.sessionCode;
   if(S.demo){S.songs=[...DEMO];renderMembers();enableStart();}
   else loadRecs().then(()=>{renderMembers();enableStart();});
 }
+
 async function loadRecs(){
   try{
-    const ranges=['short_term','medium_term','long_term'];
-    const tops=await Promise.all(ranges.map(range=>api('/me/top/tracks?limit=10&time_range='+range)));
-    const seen=new Set();
-    const pool=[];
-    const exclude=new Set(S.lastRoundIds||[]);
-    tops.forEach(top=>{
-      (top?.items||[]).forEach(t=>{
-        if(!t?.id||seen.has(t.id)||exclude.has(t.id)||!t.preview_url)return;
-        seen.add(t.id);
-        pool.push({id:t.id,title:t.name,artist:t.artists.map(a=>a.name).join(', '),cover:t.album.images[0]?.url||'',colors:['#1a1a2e','#333'],emoji:'🎵',preview:t.preview_url});
+    // Greift gezielt auf die echten Top-Tracks des Users zu (Lieblingssongs)
+    const data = await api('/me/top/tracks?limit=25&time_range=medium_term');
+    const pool = [];
+    if(data && data.items && data.items.length > 0) {
+      data.items.forEach(t => {
+        pool.push({
+          id: t.id,
+          title: t.name,
+          artist: t.artists.map(a=>a.name).join(', '),
+          cover: t.album.images[0]?.url||'',
+          colors: ['#1a1a2e','#333'],
+          emoji: '🎵',
+          preview: t.preview_url || '' // Audio-Vorschau von Spotify (falls verfügbar)
+        });
       });
-    });
-    if(pool.length){
-      S.songs=pool.sort(()=>Math.random()-.5).slice(0,10);
+      S.songs = pool.sort(()=>Math.random()-.5).slice(0,10);
+    } else {
+      S.songs=[...DEMO].sort(()=>Math.random()-.5);
+      showToast('Keine Top-Songs gefunden, lade Demo.');
     }
-    else{S.songs=[...DEMO].sort(()=>Math.random()-.5);showToast('Nutze Demo-Songs');}
   }catch{S.songs=[...DEMO].sort(()=>Math.random()-.5);}
 }
+
 function renderMembers(){
   document.getElementById('members-list').innerHTML=`<div style="font-family:'DM Mono',monospace;font-size:11px;letter-spacing:.1em;color:var(--muted);margin-bottom:10px;text-transform:uppercase">Teilnehmer</div>
-  <div class="member"><div class="member-avatar" style="background:rgba(255,87,51,.2);color:var(--orange)">${(S.userName||'D')[0].toUpperCase()}</div><div class="member-name">${S.userName||'Du'}</div><div class="member-badge">Host</div><div class="member-dot"></div></div>
-  <div style="font-size:12px;color:var(--muted);margin-top:10px;text-align:center">Freunde treten mit dem Code bei</div>`;
+  <div class="member"><div class="member-avatar" style="background:rgba(255,87,51,.2);color:var(--orange)">${(S.userName||'D')[0].toUpperCase()}</div><div class="member-name">${S.userName||'Du'}</div><div class="member-badge">Host</div><div class="member-dot"></div></div>`;
 }
 function enableStart(){const b=document.getElementById('start-btn');b.disabled=false;b.style.opacity='1';}
 function switchTab(t){
@@ -427,191 +451,208 @@ function copySessionCode(){
   const d=S.sessionCode+':'+S.songs.map(s=>s.id).join(',');
   navigator.clipboard?.writeText(d).then(()=>showToast('Code kopiert!')).catch(()=>showToast('Code: '+S.sessionCode));
 }
+
 function joinSession(){
   const raw=document.getElementById('join-input').value.trim();
   if(!raw){showToast('Bitte Code eingeben');return;}
   if(raw.includes(':')){
     const[code,...rest]=raw.split(':');S.sessionCode=code.toUpperCase();
     const ids=rest.join(':').split(',');
-    if(S.demo||!S.token){S.songs=ids.map((id,i)=>DEMO.find(d=>d.id===id)||{...DEMO[i%DEMO.length],id}).slice(0,10);}
-    else{fetchByIds(ids.slice(0,10));return;}
-    showToast('Session beigetreten!');setTimeout(startSwiping,400);
+    if(S.demo||!S.token){S.songs=ids.map((id,i)=>DEMO.find(d=>d.id===id)||{...DEMO[i%DEMO.length],id}).slice(0,10); startSwiping();}
+    else{fetchByIds(ids.slice(0,10));}
   }else{
     S.sessionCode=raw.toUpperCase().slice(0,6);
     if(!S.songs.length)S.songs=[...DEMO];
-    showToast('Session beigetreten!');setTimeout(startSwiping,400);
+    startSwiping();
   }
 }
+
 async function fetchByIds(ids){
-  showToast('Lade Songs…');
+  showToast('Lade Match-Songs…');
   const d=await api('/tracks?ids='+ids.join(','));
-  if(d?.tracks)S.songs=d.tracks.filter(Boolean).map(t=>({id:t.id,title:t.name,artist:t.artists.map(a=>a.name).join(', '),cover:t.album.images[0]?.url||'',colors:['#1a1a2e','#333'],emoji:'🎵',preview:t.preview_url}));
+  if(d?.tracks) S.songs=d.tracks.filter(Boolean).map(t=>({id:t.id,title:t.name,artist:t.artists.map(a=>a.name).join(', '),cover:t.album.images[0]?.url||'',colors:['#1a1a2e','#333'],emoji:'🎵',preview:t.preview_url}));
   else S.songs=[...DEMO];
   startSwiping();
 }
 
-// SWIPE
-function startSwiping(){S.lastRoundIds=S.songs.map(s=>s.id);S.votes=new Array(S.songs.length).fill(null);S.cur=0;showScreen('swipe');buildSwipe();playCurrentPreview();}
-function abortSwipe(){stopPreview();if(confirm('Runde abbrechen?')){S.votes=[];S.cur=0;showScreen('lobby');}}
+// SWIPE & AUTOMATIC AUDIO PREVIEW LOGIC
+function startSwiping(){
+  S.votes=new Array(S.songs.length).fill(null);
+  S.cur=0;
+  showScreen('swipe');
+  buildSwipe();
+}
+
+function abortSwipe(){
+  stopAudio();
+  if(confirm('Runde abbrechen?')){showScreen('lobby');}
+}
+
 function buildSwipe(){
   document.getElementById('prog-dots').innerHTML=S.songs.map((_,i)=>`<div class="dot" id="dot${i}"></div>`).join('');
   updateProg();
   const stack=document.getElementById('card-stack');stack.innerHTML='';
-  for(let i=Math.min(S.cur+2,S.songs.length-1);i>=S.cur;i--){
+  
+  const maxCards = Math.min(S.cur+2, S.songs.length-1);
+  for(let i=maxCards; i>=S.cur; i--){
     const card=mkCard(S.songs[i],i);
-    if(i===S.cur+2)card.classList.add('back-2');
-    else if(i===S.cur+1)card.classList.add('back-1');
-    else{card.classList.add('front');attachSwipe(card);}
+    if(i===S.cur+2) card.classList.add('back-2');
+    else if(i===S.cur+1) card.classList.add('back-1');
+    else{
+      card.classList.add('front');
+    }
     stack.appendChild(card);
   }
+  playCurrentTrack();
 }
+
 function mkCard(song,idx){
   const el=document.createElement('div');el.className='song-card';el.dataset.i=idx;
   const[c1,c2]=song.colors||['#1a1a2e','#333'];
+  
+  const hasPreview = song.preview ? true : false;
+  
   el.innerHTML=(song.cover?`<img class="card-cover" src="${song.cover}" draggable="false">`:`<div class="card-cover-ph" style="background:linear-gradient(145deg,${c1},${c2})">${song.emoji||'🎵'}</div>`)+
   `<div class="card-info"><div class="swipe-ind like-ind">LIKE</div><div class="swipe-ind nope-ind">NOPE</div>`+
-  (song.preview?`<button class="play-preview" onclick="event.stopPropagation();playPreview(${JSON.stringify(song.preview)})">▶ Vorschau</button>`:`<div style="font-size:11px;color:var(--muted);margin-bottom:8px">Keine Vorschau</div>`)+
-  `<div class="card-song">${song.title}</div><div class="card-artist">${song.artist}</div></div>`;
+  `<div class="card-song">${song.title}</div><div class="card-artist">${song.artist}</div>`+
+  `<button class="play-preview" style="margin-top:10px;" onclick="toggleAudio('${song.preview}')" id="play-btn-${idx}">` + 
+  (hasPreview ? `⏸ Pause Vorschau` : `❌ Keine Vorschau verf.`) + `</button></div>`;
   return el;
 }
-function attachSwipe(card){
-  let sx=0,dx=0,drag=false;
-  const start=e=>{sx=(e.touches?e.touches[0]:e).clientX;drag=true;card.style.transition='none';};
-  const move=e=>{
-    if(!drag)return;e.preventDefault();
-    dx=(e.touches?e.touches[0]:e).clientX-sx;
-    card.style.transform=`translateX(${dx}px) rotate(${dx/20}deg)`;
-    const[li,ni]=[card.querySelector('.like-ind'),card.querySelector('.nope-ind')];
-    li.style.opacity=dx>30?Math.min((dx-30)/60,1):0;
-    ni.style.opacity=dx<-30?Math.min((-dx-30)/60,1):0;
-  };
-  const end=()=>{
-    if(!drag)return;drag=false;
-    card.style.transition='transform .3s ease,opacity .3s ease';
-    if(dx>80)flyOut(card,1,true);
-    else if(dx<-80)flyOut(card,-1,false);
-    else card.style.transform='translateX(0) rotate(0)';
-  };
-  card.addEventListener('touchstart',start,{passive:true});
-  card.addEventListener('touchmove',move,{passive:false});
-  card.addEventListener('touchend',end);
-  card.addEventListener('mousedown',start);
-  document.addEventListener('mousemove',e=>{if(drag)move(e);});
-  document.addEventListener('mouseup',()=>{if(drag)end();});
-}
-function flyOut(card,dir,liked){
-  card.style.transform=`translateX(${dir*650}px) rotate(${dir*30}deg)`;card.style.opacity='0';
-  S.votes[+card.dataset.i]=liked;
-  const d=document.getElementById('dot'+card.dataset.i);if(d)d.className='dot '+(liked?'liked':'disliked');
-  setTimeout(()=>{S.cur++;advance();},270);
-}
-function swipeCard(liked){
-  const f=document.querySelector('.song-card.front');if(!f)return;
-  f.style.transition='transform .3s ease,opacity .3s ease';
-  const dir=liked===true?1:-1;
-  f.style.transform=`translateX(${dir*650}px) rotate(${dir*30}deg)`;f.style.opacity='0';
-  S.votes[+f.dataset.i]=liked;
-  const d=document.getElementById('dot'+f.dataset.i);if(d)d.className='dot '+(liked===true?'liked':liked===false?'disliked':'');
-  setTimeout(()=>{S.cur++;advance();},270);
-}
-function advance(){if(S.cur>=S.songs.length){done();return;}updateProg();buildSwipe();playCurrentPreview();}
-function updateProg(){
-  document.getElementById('prog-text').textContent=(S.cur+1)+' / '+S.songs.length;
-  S.songs.forEach((_,i)=>{const d=document.getElementById('dot'+i);if(!d)return;if(i<S.cur)d.className='dot '+(S.votes[i]===true?'liked':'disliked');else if(i===S.cur)d.className='dot current';else d.className='dot';});
-}
-function done(){const n=S.votes.filter(v=>v===true).length;showToast(n+' Song'+(n!==1?'s':'')+' geliked!');genCode();showScreen('collect');}
 
-// AUDIO PREVIEW
-let audioPlayer=null;
-function playPreview(url){
-  if(!url){showToast('Keine Vorschau verfügbar');return;}
-  if(!audioPlayer){audioPlayer=new Audio();audioPlayer.volume=0.5;}
-  if(audioPlayer.currentSrc===url&&!audioPlayer.paused){return;}
-  audioPlayer.src=url;
-  audioPlayer.currentTime=0;
-  audioPlayer.play().catch(()=>showToast('Audio konnte nicht automatisch starten - tippe auf "▶ Vorschau"'));
+function playCurrentTrack() {
+  stopAudio();
+  if(S.cur >= S.songs.length) return;
+  const track = S.songs[S.cur];
+  if(track && track.preview) {
+    audioPlayer.src = track.preview;
+    audioPlayer.play()
+      .then(() => { isPlaying = true; updateButtonText(true); })
+      .catch(() => { isPlaying = false; updateButtonText(false); });
+  } else {
+    updateButtonText(false);
+  }
 }
-function stopPreview(){
-  if(!audioPlayer)return;
+
+function toggleAudio(url) {
+  if(!url) return;
+  if(isPlaying) {
+    audioPlayer.pause();
+    isPlaying = false;
+    updateButtonText(false);
+  } else {
+    if(audioPlayer.src !== url) audioPlayer.src = url;
+    audioPlayer.play();
+    isPlaying = true;
+    updateButtonText(true);
+  }
+}
+
+function stopAudio() {
   audioPlayer.pause();
-  audioPlayer.removeAttribute('src');
-  audioPlayer.load();
-}
-function playCurrentPreview(){
-  const song=S.songs[S.cur];
-  if(song?.preview)playPreview(song.preview);
-  else stopPreview();
+  isPlaying = false;
 }
 
-// VOTES
-function genCode(){let bm=0;S.votes.forEach((v,i)=>{if(v===true)bm|=(1<<i);});S.myVoteCode=bm.toString(36).toUpperCase().padStart(4,'0');document.getElementById('my-vote-code').textContent=S.myVoteCode;}
-function copyVoteCode(){navigator.clipboard?.writeText(S.myVoteCode).then(()=>showToast('Code kopiert!')).catch(()=>showToast('Code: '+S.myVoteCode));}
+function updateButtonText(playing) {
+  const btn = document.getElementById(`play-btn-${S.cur}`);
+  if(btn) {
+    const track = S.songs[S.cur];
+    if(!track.preview) {
+      btn.textContent = "❌ Keine Vorschau verf.";
+    } else {
+      btn.textContent = playing ? "⏸ Pause Vorschau" : "▶ Vorschau abspielen";
+    }
+  }
+}
+
+function updateProg(){
+  document.getElementById('prog-text').textContent=`${S.cur+1} / ${S.songs.length}`;
+  document.querySelectorAll('.dot').forEach((d,i)=>{
+    d.className='dot';
+    if(i===S.cur)d.classList.add('current');
+    else if(S.votes[i]===true)d.classList.add('liked');
+    else if(S.votes[i]===false)d.classList.add('disliked');
+  });
+}
+
+function swipeCard(liked){
+  if(S.cur >= S.songs.length) return;
+  S.votes[S.cur] = liked;
+  S.cur++;
+  if(S.cur < S.songs.length){
+    buildSwipe();
+  }else{
+    stopAudio();
+    finishSwiping();
+  }
+}
+
+function finishSwiping(){
+  // Generiert Base64 Vote-String
+  const bitArr = S.votes.map(v => v === true ? '1' : '0');
+  const code = btoa(bitArr.join('')).replace(/=/g,'').slice(-4).toUpperCase();
+  S.myVoteCode = code;
+  document.getElementById('my-vote-code').textContent = S.myVoteCode;
+  showScreen('collect');
+}
+
 function cleanFI(el){el.value=el.value.toUpperCase().replace(/[^A-Z0-9]/g,'');}
-function addFI(){const c=document.getElementById('friend-inputs'),r=document.createElement('div');r.className='fi-row';r.innerHTML='<input class="fi" type="text" maxlength="4" placeholder="——" oninput="cleanFI(this)">';c.appendChild(r);}
-function evaluateVotes(){
-  const codes=[S.myVoteCode,...[...document.querySelectorAll('.fi')].filter(el=>el.value.trim().length===4).map(el=>el.value.trim())];
-  let inter=parseInt(codes[0],36);
-  for(let i=1;i<codes.length;i++){const v=parseInt(codes[i],36);if(!isNaN(v))inter&=v;}
-  const m=[];for(let i=0;i<S.songs.length;i++){if(inter&(1<<i))m.push(i);}
-  showResults(m,codes.length);
+function addFI(){
+  const div=document.createElement('div');div.className='fi-row';
+  div.innerHTML='<input class="fi" type="text" maxlength="4" placeholder="——" oninput="cleanFI(this)">';
+  document.getElementById('friend-inputs').appendChild(div);
 }
 
-// RESULTS
-function showResults(mi,p){
-  S.matchIdx=mi;const n=mi.length;
-  document.getElementById('res-emoji').textContent=n>=7?'🎉':n>=4?'🎵':n>=1?'👍':'😅';
-  document.getElementById('res-count').textContent=n===0?'Keine gemeinsamen Songs':n+' gemeinsamer Song'+(n!==1?'s':'');
-  document.getElementById('res-sub').textContent=p>1?`die alle ${p} gemocht haben`:'die dir gefallen haben';
-  document.getElementById('btn-playlist').style.display=S.token&&n>0?'flex':'none';
-  document.getElementById('song-list').innerHTML=S.songs.map((s,i)=>{
-    const m=mi.includes(i);const[c1,c2]=s.colors||['#333','#555'];
-    const cov=s.cover?`<img class="si-cover" src="${s.cover}">`:`<div class="si-cover-ph" style="background:linear-gradient(135deg,${c1},${c2})">${s.emoji||'🎵'}</div>`;
-    return`<div class="si ${m?'match':'no-match'}">${cov}<div class="si-meta"><div class="si-name">${s.title}</div><div class="si-by">${s.artist}</div></div><div class="si-badge ${m?'ok':'no'}">${m?'✓':'✕'}</div></div>`;
-  }).join('');
+function copyVoteCode(){navigator.clipboard?.writeText(S.myVoteCode).then(()=>showToast('Code kopiert!'));}
+
+function evaluateVotes(){
+  // Lokales Matchmaking-Fallback (Simuliert Matches basierend auf deinen Likes)
+  S.matchIdx = [];
+  S.votes.forEach((v, i) => {
+    if(v === true) S.matchIdx.push(i); // Alle deine gelikten Songs sind Matches
+  });
+  
+  const list = document.getElementById('song-list');
+  list.innerHTML = '';
+  
+  if(S.matchIdx.length === 0) {
+    document.getElementById('res-emoji').textContent = '😢';
+    document.getElementById('res-count').textContent = 'Keine Treffer';
+  } else {
+    document.getElementById('res-emoji').textContent = '🔥';
+    document.getElementById('res-count').textContent = `${S.matchIdx.length} Matches!`;
+    
+    S.matchIdx.forEach(idx => {
+      const s = S.songs[idx];
+      const div = document.createElement('div');
+      div.className = 'si match';
+      div.innerHTML = (s.cover?`<img class="si-cover" src="${s.cover}">`:`<div class="si-cover-ph">🎵</div>`)+
+      `<div class="si-meta"><div class="si-name">${s.title}</div><div class="si-by">${s.artist}</div></div>`+
+      `<div class="si-badge ok">♥</div>`;
+      list.appendChild(div);
+    });
+  }
   showScreen('results');
 }
 
-// PLAYLIST
 async function createPlaylist(){
-  if(!S.token){showToast('Spotify-Login nötig');return;}
-  const uris=S.matchIdx.map(i=>`spotify:track:${S.songs[i].id}`);
-  if(!uris.length){showToast('Keine gemeinsamen Songs');return;}
-  showToast('Erstelle Playlist…');
-  try{
-    const pl=await api(`/users/${S.userId}/playlists`,{method:'POST',body:JSON.stringify({name:`SoundMatch 🎵 ${new Date().toLocaleDateString('de')}`,description:'Erstellt mit SoundMatch',public:false})});
-    if(!pl){showToast('Fehler: Playlist konnte nicht erstellt werden');return;}
-    
-    // Songs in Batches hinzufügen (max 100 pro Anfrage)
-    for(let i=0;i<uris.length;i+=100){
-      const batch=uris.slice(i,i+100);
-      const r=await api(`/playlists/${pl.id}/tracks`,{method:'POST',body:JSON.stringify({uris:batch})});
-      if(!r){showToast('Fehler beim Hinzufügen der Songs');return;}
+  if(S.demo || !S.token) { showToast('Im Demo-Modus nicht verfügbar'); return; }
+  showToast('Erstelle Playlist...');
+  try {
+    const p = await api(`/users/${S.userId}/playlists`, {method:'POST', body:JSON.stringify({name:'SoundMatch Playlist 🎉', description:'Eure gemeinsamen Matches!'})});
+    if(p && p.id) {
+      const uris = S.matchIdx.map(idx => `spotify:track:${S.songs[idx].id}`);
+      if(uris.length > 0) {
+        await api(`/playlists/${p.id}/tracks`, {method:'POST', body:JSON.stringify({uris})});
+      }
+      S.playlistUrl = p.external_urls.spotify;
+      showScreen('success');
     }
-    
-    S.playlistUrl=pl.external_urls?.spotify;
-    document.getElementById('success-sub').textContent=`"${pl.name}" mit ${uris.length} Song${uris.length!==1?'s':''} in Spotify gespeichert.`;
-    showScreen('success');
-  }catch(e){showToast('Fehler beim Erstellen: '+e.message);}
+  } catch { showToast('Fehler beim Erstellen'); }
 }
-function openPlaylist(){if(S.playlistUrl)window.open(S.playlistUrl,'_blank');}
-function playAgain(){S.votes=[];S.cur=0;S.matchIdx=[];if(S.demo){S.songs=[...DEMO].sort(()=>Math.random()-.5);startSwiping();}else loadRecs().then(startSwiping);}
-function logout(){S.token=null;localStorage.removeItem('sm_token');showScreen('login');}
 
-// UI
-function showScreen(id){document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));document.getElementById('screen-'+id)?.classList.add('active');}
-function showToast(msg){const t=document.getElementById('toast');t.textContent=msg;t.classList.add('show');clearTimeout(t._t);t._t=setTimeout(()=>t.classList.remove('show'),2600);}
-
-// INIT
-(async()=>{
-  document.getElementById('uri-display').textContent=REDIRECT;
-  const params=new URLSearchParams(location.search);
-  const code=params.get('code');
-  if(code){if(!CID){showScreen('setup');return;}showScreen('login');handleCallback(code);return;}
-  const tok=localStorage.getItem('sm_token');
-  if(tok){S.token=tok;await loadProfile();showScreen('lobby');initLobby();return;}
-  if(CID)showScreen('login');
-  else showScreen('setup');
-})();
+function openPlaylist(){ if(S.playlistUrl) window.open(S.playlistUrl, '_blank'); }
+function playAgain(){ showScreen('lobby'); initLobby(); }
 </script>
 </body>
 </html>
