@@ -258,8 +258,9 @@ body{background:var(--bg);color:var(--text);font-family:'DM Sans',sans-serif;hei
 <!-- ── SWIPE ── -->
 <div class="screen" id="screen-swipe">
   <div class="swipe-header">
+    <button class="back-btn" onclick="abortSwipe()">←</button>
     <span class="prog-text" id="prog-text">1 / 10</span>
-    <div class="prog-dots" id="prog-dots"></div>
+    <div class="spacer"></div>
   </div>
   <div class="card-stack" id="card-stack"></div>
   <div class="swipe-actions">
@@ -438,6 +439,7 @@ async function fetchByIds(ids){
 
 // SWIPE
 function startSwiping(){S.votes=new Array(S.songs.length).fill(null);S.cur=0;buildSwipe();showScreen('swipe');}
+function abortSwipe(){if(confirm('Runde abbrechen?')){S.votes=[];S.cur=0;showScreen('lobby');}}
 function buildSwipe(){
   document.getElementById('prog-dots').innerHTML=S.songs.map((_,i)=>`<div class="dot" id="dot${i}"></div>`).join('');
   updateProg();
@@ -540,12 +542,19 @@ async function createPlaylist(){
   showToast('Erstelle Playlist…');
   try{
     const pl=await api(`/users/${S.userId}/playlists`,{method:'POST',body:JSON.stringify({name:`SoundMatch 🎵 ${new Date().toLocaleDateString('de')}`,description:'Erstellt mit SoundMatch',public:false})});
-    if(!pl)throw 0;
-    await api(`/playlists/${pl.id}/tracks`,{method:'POST',body:JSON.stringify({uris})});
+    if(!pl){showToast('Fehler: Playlist konnte nicht erstellt werden');return;}
+    
+    // Songs in Batches hinzufügen (max 100 pro Anfrage)
+    for(let i=0;i<uris.length;i+=100){
+      const batch=uris.slice(i,i+100);
+      const r=await api(`/playlists/${pl.id}/tracks`,{method:'POST',body:JSON.stringify({uris:batch})});
+      if(!r){showToast('Fehler beim Hinzufügen der Songs');return;}
+    }
+    
     S.playlistUrl=pl.external_urls?.spotify;
     document.getElementById('success-sub').textContent=`"${pl.name}" mit ${uris.length} Song${uris.length!==1?'s':''} in Spotify gespeichert.`;
     showScreen('success');
-  }catch{showToast('Fehler beim Erstellen');}
+  }catch(e){showToast('Fehler beim Erstellen: '+e.message);}
 }
 function openPlaylist(){if(S.playlistUrl)window.open(S.playlistUrl,'_blank');}
 function playAgain(){S.votes=[];S.cur=0;S.matchIdx=[];if(S.demo){S.songs=[...DEMO].sort(()=>Math.random()-.5);startSwiping();}else loadRecs().then(startSwiping);}
